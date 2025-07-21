@@ -1,6 +1,6 @@
 class BasePage:
 
-    cookies_modal = '[class*="cookies"], [class*="cookie-banner"], rg-cookies-modal'
+    cookies_modal = 'ion-modal.cookie, rg-cookie, [class*="cookies"], [class*="cookie-banner"]'
     cookies_allow_button = 'ion-button[translate="cookies.allow"]'
     cookies_decline_button = 'ion-button[translate="cookies.disallow"]'
 

@@ -4,6 +4,7 @@ services:
     volumes:
       - .:/app
       - playwright-cache:/root/.cache/ms-playwright
+      - ./screenshots:/app/screenshots
     environment:
       - TEST_LOGIN_VALID=${TEST_LOGIN_VALID:-test@example.com}
       - TEST_PASSWORD_VALID=${TEST_PASSWORD_VALID:-password123}

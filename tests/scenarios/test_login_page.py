@@ -57,7 +57,7 @@ def i_fill_valid_credentials(page: Page):
 
     # Используем значения из .env файла
     test_login = os.getenv("TEST_LOGIN_VALID")
-    test_password = os.getenv("TEST_PASSWORD_VALID")
+    test_password = "8Da838CA(A$t"
 
     # Проверяем, что переменные окружения установлены
     if not test_login or not test_password:
@@ -163,9 +163,15 @@ def i_complete_verification_form(page: Page):
 def dashboard_should_be_displayed(page: Page):
     """Verify that the dashboard is displayed after login"""
     # Ждем, что URL изменится на основной платформы
-    expect(page).to_have_url(
-        "https://stockstrader.roboforex.com/trading", timeout=20000
-    )
+    page.screenshot(path="screenshots/dashboard.png")
+    try:
+        expect(page).to_have_url(
+            "https://stockstrader.roboforex.com/trading", timeout=20000
+        )
+    except TimeoutError:
+        print("Dashboard URL did not change as expected. Current URL:", page.url)
+        page.screenshot(path="screenshots/error_dashboard.png")
+        raise
 
 
 @then("I should see an error message indicating invalid credentials")

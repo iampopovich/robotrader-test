@@ -57,30 +57,13 @@ class LoginPage(BasePage):
                     # Ждем появления календаря
                     self.page.wait_for_timeout(5000)
 
-                    # Выбираем год (1993)
-                    year_buttons = self.page.locator(self.date_picker_year)
-                    for i in range(year_buttons.count()):
-                        year_text = year_buttons.nth(i).text_content()
-                        if year_text and str(birth_date.year) in year_text:
-                            year_buttons.nth(i).click()
-                            break
-
-                    # Выбираем месяц (апрель - 4)
-                    month_buttons = self.page.locator(self.date_picker_month)
-                    for i in range(month_buttons.count()):
-                        month_button = month_buttons.nth(i)
-                        # Апрель должен быть 4-м месяцем (0-индексированный массив)
-                        if i == birth_date.month - 1:
-                            month_button.click()
-                            break
-
-                    # Выбираем день (14)
-                    day_buttons = self.page.locator(self.date_picker_day)
-                    for i in range(day_buttons.count()):
-                        day_text = day_buttons.nth(i).text_content()
-                        if day_text and day_text.strip() == str(birth_date.day):
-                            day_buttons.nth(i).click()
-                            break
+                    self.page.get_by_role("button", name="Choose month and year").click()
+                    self.page.get_by_role("button", name="Previous 24 years").click()
+                    self.page.get_by_role("button", name="1993").click()
+                    self.page.get_by_role("button", name="April").click()
+                    self.page.locator("button").filter(has_text="14").click()
+                    self.page.get_by_role("button", name="Set").click()
+                    self.page.get_by_role("button", name="Confirm").click()
 
                 # Нажимаем кнопку подтверждения
                 submit_button = self.page.wait_for_selector(self.submit_verification_button, timeout=10000)

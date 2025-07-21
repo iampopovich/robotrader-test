@@ -10,14 +10,25 @@ load_dotenv()
 def browser():
     """Create a browser instance for the session"""
     import os
+    from faker import Faker
+
+    fake = Faker()
+    random_user_agent = fake.user_agent()
 
     # Используем headless=True в Docker, чтобы избежать проблем с X server
     with sync_playwright() as p:
-        browser_instance = p.chromium.launch(headless=True)
+        browser_instance = p.chromium.launch(
+            headless=True,
+            args=[
+                "--disable-web-security",
+                "--disable-features=IsolateOrigins,site-per-process",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+            ]
+        )
+
         yield browser_instance
         browser_instance.close()
-
-
 @pytest.fixture(scope="function")
 def context(browser):
     """Create a new browser context for each test"""

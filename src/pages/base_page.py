@@ -8,16 +8,32 @@ class BasePage:
     def __init__(self, page):
         self.page = page
 
+    def handle_cookies_modal(self, accept_cookies=True, timeout=10000):
+        """Синхронный метод для обработки модального окна с куки"""
+        try:
+            # Проверяем, есть ли модальное окно с куки на странице
+            cookies_modal = self.page.wait_for_selector(self.cookies_modal, timeout=timeout)
+            if cookies_modal.is_visible():
+                if accept_cookies:
+                    # Нажимаем кнопку принятия куки
+                    accept_button = self.page.wait_for_selector(self.cookies_allow_button, timeout=2000)
+                    if accept_button.is_visible():
+                        accept_button.click()
+                        return True
+                else:
+                    # Нажимаем кнопку отклонения куки
+                    decline_button = self.page.wait_for_selector(self.cookies_decline_button, timeout=2000)
+                    if decline_button.is_visible():
+                        decline_button.click()
+                        return True
+            return False
+        except (TimeoutError, RuntimeError) as e:
+            # Если модальное окно не появляется или происходит ошибка, продолжаем
+            print(f"Cookie modal handling failed: {e}")
+            return False
+
     def navigate(self, url):
         self.page.goto(url)
-
-    async def navigate_and_handle_cookies(self, url, accept_cookies=True):
-        """Навигация на страницу с автоматической обработкой куки"""
-        self.page.goto(url)
-        if accept_cookies:
-            await self.accept_cookies()
-        else:
-            await self.decline_cookies()
 
     def wait_for_response(self, url):
         self.page.wait_for_response(url)
@@ -45,28 +61,4 @@ class BasePage:
             await self.page.wait_for_selector(self.cookies_modal, state='hidden', timeout=timeout)
             return True
         except TimeoutError:
-            return False
-
-    async def accept_cookies(self):
-        """Принимает куки, если модальное окно присутствует"""
-        try:
-            if await self.wait_for_cookies_modal_appears(timeout=3000):
-                await self.page.click(self.cookies_allow_button)
-                await self.wait_for_cookies_modal_not_appears()
-                return True
-            return False
-        except (TimeoutError, RuntimeError) as e:
-            print(f"Error accepting cookies: {e}")
-            return False
-
-    async def decline_cookies(self):
-        """Отклоняет куки, если модальное окно присутствует"""
-        try:
-            if await self.wait_for_cookies_modal_appears(timeout=3000):
-                await self.page.click(self.cookies_decline_button)
-                await self.wait_for_cookies_modal_not_appears()
-                return True
-            return False
-        except (TimeoutError, RuntimeError) as e:
-            print(f"Error declining cookies: {e}")
             return False

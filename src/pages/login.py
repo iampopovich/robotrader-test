@@ -2,25 +2,12 @@ from src.pages.base_page import BasePage
 
 
 class LoginPage(BasePage):
-    def __init__(self, page):
-        super().__init__(page)
-        self.username_field = "ion-input#email"
-        self.password_field = "ion-input#password"
-        self.login_button = 'ion-button[translate="login.Continue"]'
-        self.error_message = ".error-message, .alert, [class*='error']"
+    username_field = "ion-input#email input"
+    password_field = "ion-input#password input"
+    login_button = 'ion-button[color="primary"]'
+    error_message = ".error-message, .alert, [class*='error']"
 
     def login(self, username, password):
-        self.fill(self.username_field, username)
-        self.fill(self.password_field, password)
-        self.click(self.login_button)
-
-    async def login_with_cookies_handling(self, username, password, accept_cookies=True):
-        """Логин с автоматической обработкой куки модального окна"""
-        if accept_cookies:
-            await self.accept_cookies()
-        else:
-            await self.decline_cookies()
-
         self.fill(self.username_field, username)
         self.fill(self.password_field, password)
         self.click(self.login_button)

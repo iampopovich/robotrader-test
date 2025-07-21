@@ -159,45 +159,6 @@ def i_complete_verification_form(page: Page):
         pass
 
 
-# Then steps
-@then("I should be logged in")
-def i_should_be_logged_in(page: Page):
-    """Verify successful login"""
-    # Ждем перенаправления на основную платформу или дашборд
-    # Это может занять некоторое время после процесса верификации
-    try:
-        # Проверяем URL с таймаутом
-        expect(page).to_have_url("https://stockstrader.roboforex.com/", timeout=20000)
-    except Exception:
-        # Если URL не совпадает точно, проверим хотя бы, что мы на главной платформе
-        # Это обеспечивает более гибкую проверку, если URL имеет параметры или фрагменты
-        current_url = page.url
-        assert (
-            "stockstrader.roboforex.com" in current_url
-        ), f"URL не содержит базовый URL платформы. Текущий URL: {current_url}"
-        assert (
-            "/login" not in current_url
-        ), f"URL все еще содержит путь логина. Текущий URL: {current_url}"
-
-    # Дополнительная проверка: убеждаемся, что страница содержит элементы дашборда
-    dashboard_elements = [
-        "app-dashboard",  # Предполагаемый корневой компонент дашборда
-        "ion-menu",  # Типичный элемент навигации на дашборде
-        "[class*='platform-content']",  # Типичный класс для контента после логина
-    ]
-
-    # Проверяем наличие хотя бы одного из элементов дашборда
-    found_dashboard_element = False
-    for selector in dashboard_elements:
-        if page.locator(selector).count() > 0:
-            found_dashboard_element = True
-            break
-
-    assert (
-        found_dashboard_element
-    ), "Не найдены элементы дашборда на странице после логина"
-
-
 @then("Dashboard should be displayed")
 def dashboard_should_be_displayed(page: Page):
     """Verify that the dashboard is displayed after login"""

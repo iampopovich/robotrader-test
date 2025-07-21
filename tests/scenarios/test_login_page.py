@@ -52,14 +52,6 @@ def i_have_an_account():
 @when("I go to the login page")
 def i_go_to_login_page(page: Page):
     """Navigate to the login page"""
-    page.goto("https://stockstrader.roboforex.com/login")
-    # Wait for page to load completely
-    page.wait_for_load_state("domcontentloaded", timeout=30000)
-
-    # Additional wait for Angular/Ionic app to initialize
-    page.wait_for_timeout(3000)
-
-    # Check if cookies modal is visible and handle it
     login_page = LoginPage(page)
     login_page.navigate("https://stockstrader.roboforex.com/login")
     login_page.handle_cookies_modal(accept_cookies=True)

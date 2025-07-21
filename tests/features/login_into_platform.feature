@@ -8,7 +8,7 @@ Feature: Login
         And I fill in the login form with valid credentials
         And I press the login button
         And I complete the verification form if it appears
-        Then I should be logged in
+        Then Dashboard should be displayed
 
     Scenario: Unsuccessful login
         Given I'm a user

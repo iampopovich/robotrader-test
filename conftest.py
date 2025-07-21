@@ -1,5 +1,9 @@
 import pytest
 from playwright.sync_api import sync_playwright
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения из .env файла
+load_dotenv()
 
 
 @pytest.fixture(scope="session")

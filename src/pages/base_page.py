@@ -1,4 +1,10 @@
 class BasePage:
+
+
+    cookies_allow_button = 'ion-button[translate="cookies.allow"]'
+    cookies_decline_button = 'ion-button[translate="cookies.decline"]'
+
+
     def __init__(self, page):
         self.page = page
 
@@ -19,12 +25,12 @@ class BasePage:
 
     def accept_cookies(self):
         try:
-            self.page.click('button:has-text("Accept")')
+            self.page.click(self.cookies_allow_button)
         except Exception as e:
             print(f"Error accepting cookies: {e}")
 
     def decline_cookies(self):
         try:
-            self.page.click('button:has-text("Decline")')
+            self.page.click(self.cookies_decline_button)
         except Exception as e:
             print(f"Error declining cookies: {e}")

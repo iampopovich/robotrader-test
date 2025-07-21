@@ -10,10 +10,10 @@ load_dotenv()
 def browser():
     """Create a browser instance for the session"""
     import os
-    
+
     # Определяем, запущены ли мы в Docker контейнере
-    in_docker = os.environ.get("IN_DOCKER", "false").lower() == "true"
-    
+    in_docker = os.environ.get("IN_DOCKER", "false").lower() == "false"
+
     # Используем headless=True в Docker, чтобы избежать проблем с X server
     with sync_playwright() as p:
         browser_instance = p.chromium.launch(headless=in_docker)

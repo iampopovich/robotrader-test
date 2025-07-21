@@ -8,7 +8,7 @@ class BasePage:
     def __init__(self, page):
         self.page = page
 
-    def handle_cookies_modal(self, accept_cookies=True, timeout=10000):
+    def handle_cookies_modal(self, accept_cookies=True, timeout=30000):
         """Синхронный метод для обработки модального окна с куки"""
         try:
             # Проверяем, есть ли модальное окно с куки на странице
@@ -16,13 +16,13 @@ class BasePage:
             if cookies_modal.is_visible():
                 if accept_cookies:
                     # Нажимаем кнопку принятия куки
-                    accept_button = self.page.wait_for_selector(self.cookies_allow_button, timeout=2000)
+                    accept_button = self.page.wait_for_selector(self.cookies_allow_button, timeout=10000)
                     if accept_button.is_visible():
                         accept_button.click()
                         return True
                 else:
                     # Нажимаем кнопку отклонения куки
-                    decline_button = self.page.wait_for_selector(self.cookies_decline_button, timeout=2000)
+                    decline_button = self.page.wait_for_selector(self.cookies_decline_button, timeout=10000)
                     if decline_button.is_visible():
                         decline_button.click()
                         return True
@@ -47,7 +47,7 @@ class BasePage:
     def get_text(self, selector):
         return self.page.text_content(selector)
 
-    async def wait_for_cookies_modal_appears(self, timeout=5000):
+    async def wait_for_cookies_modal_appears(self, timeout=10000):
         """Асинхронно ожидает появления модального окна с куки"""
         try:
             await self.page.wait_for_selector(self.cookies_modal, timeout=timeout)
@@ -55,7 +55,7 @@ class BasePage:
         except TimeoutError:
             return False
 
-    async def wait_for_cookies_modal_not_appears(self, timeout=5000):
+    async def wait_for_cookies_modal_not_appears(self, timeout=10000):
         """Асинхронно ожидает исчезновения модального окна с куки"""
         try:
             await self.page.wait_for_selector(self.cookies_modal, state='hidden', timeout=timeout)

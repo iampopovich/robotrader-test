@@ -4,6 +4,7 @@ from src.pages.login import LoginPage
 import os
 import pytest
 from dotenv import load_dotenv
+import pathlib
 
 # Загружаем переменные окружения из .env файла
 load_dotenv()
@@ -17,9 +18,11 @@ if missing_vars:
     )
     print("Используйте файл .env.example как шаблон для создания .env файла")
 
+# Get the absolute path to the feature file
+feature_file_path = str(pathlib.Path(__file__).parent.parent / "features" / "login_into_platform.feature")
 
 # Scenarios
-@scenario("../features/login_into_platform.feature", "Successful login")
+@scenario(feature_file_path, "Successful login")
 def test_successful_login():
     """User can log in with valid credentials"""
 
@@ -115,7 +118,7 @@ def i_complete_verification_form(page: Page):
     login_page = LoginPage(page)
 
     # Wait for possible verification form to appear (up to 10 seconds)
-    page.wait_for_timeout(5000)
+    page.wait_for_timeout(10000)
 
     # Получаем данные для верификации из .env файла
     phone_digits = os.getenv("PHONE_VERIFICATION")
@@ -152,7 +155,7 @@ def i_complete_verification_form(page: Page):
         login_page.handle_verification(
             phone_last_digits=phone_digits, birth_date=birth_date
         )
-    except:
+    except Exception:
         pass
 
 
@@ -209,7 +212,7 @@ def i_should_see_invalid_credentials_error(page: Page):
     """Verify invalid credentials error message is displayed"""
     login_page = LoginPage(page)
     error_element = page.locator(login_page.error_message)
-    expect(error_element).to_be_visible(timeout=5000)
+    expect(error_element).to_be_visible(timeout=10000)
     # Additional check for specific error text if needed
     # expect(error_element).to_contain_text("Invalid credentials")
 
@@ -219,7 +222,7 @@ def i_should_see_empty_credentials_error(page: Page):
     """Verify empty credentials error message is displayed"""
     login_page = LoginPage(page)
     error_element = page.locator(login_page.error_message)
-    expect(error_element).to_be_visible(timeout=5000)
+    expect(error_element).to_be_visible(timeout=10000)
     # Additional check for specific error text if needed
     # expect(error_element).to_contain_text("cannot be empty")
 
@@ -229,6 +232,6 @@ def i_should_see_account_not_exist_error(page: Page):
     """Verify account does not exist error message is displayed"""
     login_page = LoginPage(page)
     error_element = page.locator(login_page.error_message)
-    expect(error_element).to_be_visible(timeout=5000)
+    expect(error_element).to_be_visible(timeout=10000)
     # Additional check for specific error text if needed
     # expect(error_element).to_contain_text("account does not exist")

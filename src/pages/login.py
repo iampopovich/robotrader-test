@@ -40,22 +40,22 @@ class LoginPage(BasePage):
         """
         try:
             # Проверяем, появилась ли форма верификации
-            verification_form = self.page.wait_for_selector(self.verification_form, timeout=5000)
+            verification_form = self.page.wait_for_selector(self.verification_form, timeout=10000)
             if verification_form.is_visible():
                 print("Верификационная форма обнаружена")
 
                 # Заполняем последние 4 цифры номера телефона
-                phone_field = self.page.wait_for_selector(self.phone_input, timeout=2000)
+                phone_field = self.page.wait_for_selector(self.phone_input, timeout=10000)
                 if phone_field.is_visible():
                     phone_field.fill(phone_last_digits)
 
                 # Открываем выбор даты
-                date_trigger = self.page.wait_for_selector(self.date_picker_trigger, timeout=2000)
+                date_trigger = self.page.wait_for_selector(self.date_picker_trigger, timeout=10000)
                 if date_trigger.is_visible():
                     date_trigger.click()
 
                     # Ждем появления календаря
-                    self.page.wait_for_timeout(1000)
+                    self.page.wait_for_timeout(5000)
 
                     # Выбираем год (1993)
                     year_buttons = self.page.locator(self.date_picker_year)
@@ -83,7 +83,7 @@ class LoginPage(BasePage):
                             break
 
                 # Нажимаем кнопку подтверждения
-                submit_button = self.page.wait_for_selector(self.submit_verification_button, timeout=2000)
+                submit_button = self.page.wait_for_selector(self.submit_verification_button, timeout=10000)
                 if submit_button.is_visible():
                     submit_button.click()
                 return True

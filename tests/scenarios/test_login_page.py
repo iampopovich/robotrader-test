@@ -105,17 +105,57 @@ def i_fill_nonexistent_credentials(page: Page):
 @when("I press the login button")
 def i_press_login_button(page: Page):
     """Click the login button"""
-    # Debug: take a screenshot to see current page state
-    page.click(LoginPage.login_button)
+    login_page = LoginPage(page)
+    login_page.click(login_page.login_button)
+
+
+@when("I complete the verification form if it appears")
+def i_complete_verification_form(page: Page):
+    """Handle the verification form if it appears after login"""
+    login_page = LoginPage(page)
+
+    # Wait for possible verification form to appear (up to 10 seconds)
+    page.wait_for_timeout(5000)
+
+    # Get verification phone digits from environment variable or use default
+    phone_digits = os.getenv("TEST_PHONE_LAST_DIGITS", "1234")
+
+    # Handle verification form with the phone digits
+    # Default birthdate is set to April 14, 1993 in the method
+    login_page.handle_verification(phone_last_digits=phone_digits)
 
 
 # Then steps
 @then("I should be logged in")
 def i_should_be_logged_in(page: Page):
     """Verify successful login"""
-    # Wait for redirect to main platform or dashboard
-    # This selector should be updated based on actual post-login page structure
-    expect(page).to_have_url("https://stockstrader.roboforex.com/", timeout=10000)
+    # Ждем перенаправления на основную платформу или дашборд
+    # Это может занять некоторое время после процесса верификации
+    try:
+        # Проверяем URL с таймаутом
+        expect(page).to_have_url("https://stockstrader.roboforex.com/", timeout=20000)
+    except Exception:
+        # Если URL не совпадает точно, проверим хотя бы, что мы на главной платформе
+        # Это обеспечивает более гибкую проверку, если URL имеет параметры или фрагменты
+        current_url = page.url
+        assert "stockstrader.roboforex.com" in current_url, f"URL не содержит базовый URL платформы. Текущий URL: {current_url}"
+        assert "/login" not in current_url, f"URL все еще содержит путь логина. Текущий URL: {current_url}"
+
+    # Дополнительная проверка: убеждаемся, что страница содержит элементы дашборда
+    dashboard_elements = [
+        "app-dashboard",  # Предполагаемый корневой компонент дашборда
+        "ion-menu",  # Типичный элемент навигации на дашборде
+        "[class*='platform-content']"  # Типичный класс для контента после логина
+    ]
+
+    # Проверяем наличие хотя бы одного из элементов дашборда
+    found_dashboard_element = False
+    for selector in dashboard_elements:
+        if page.locator(selector).count() > 0:
+            found_dashboard_element = True
+            break
+
+    assert found_dashboard_element, "Не найдены элементы дашборда на странице после логина"
 
 
 @then("I should see an error message indicating invalid credentials")

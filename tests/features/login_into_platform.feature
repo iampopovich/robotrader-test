@@ -7,6 +7,7 @@ Feature: Login
         When I go to the login page
         And I fill in the login form with valid credentials
         And I press the login button
+        And I complete the verification form if it appears
         Then I should be logged in
 
     Scenario: Unsuccessful login

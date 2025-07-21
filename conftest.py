@@ -9,8 +9,14 @@ load_dotenv()
 @pytest.fixture(scope="session")
 def browser():
     """Create a browser instance for the session"""
+    import os
+    
+    # Определяем, запущены ли мы в Docker контейнере
+    in_docker = os.environ.get("IN_DOCKER", "false").lower() == "true"
+    
+    # Используем headless=True в Docker, чтобы избежать проблем с X server
     with sync_playwright() as p:
-        browser_instance = p.chromium.launch(headless=False)
+        browser_instance = p.chromium.launch(headless=in_docker)
         yield browser_instance
         browser_instance.close()
 

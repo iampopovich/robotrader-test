@@ -1,4 +1,3 @@
-
 from pytest_bdd import scenario, given, when, then
 from playwright.sync_api import Page, expect
 from src.pages.login import LoginPage
@@ -10,31 +9,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Проверяем наличие необходимых переменных окружения
-required_env_vars = ["TEST_LOGIN_VALID", "TEST_PASSWORD_VALID", "TEST_PHONE_LAST_DIGITS"]
+required_env_vars = ["TEST_LOGIN_VALID", "TEST_PASSWORD_VALID"]
 missing_vars = [var for var in required_env_vars if os.getenv(var) is None]
 if missing_vars:
-    print(f"WARNING: Следующие переменные окружения не установлены: {', '.join(missing_vars)}")
+    print(
+        f"WARNING: Следующие переменные окружения не установлены: {', '.join(missing_vars)}"
+    )
     print("Используйте файл .env.example как шаблон для создания .env файла")
 
+
 # Scenarios
-@scenario('../features/login_into_platform.feature', 'Successful login')
+@scenario("../features/login_into_platform.feature", "Successful login")
 def test_successful_login():
     """User can log in with valid credentials"""
-
-
-@scenario('../features/login_into_platform.feature', 'Unsuccessful login')
-def test_unsuccessful_login():
-    """User cannot log in with invalid credentials"""
-
-
-@scenario('../features/login_into_platform.feature', 'Login with empty credentials')
-def test_login_with_empty_credentials():
-    """User cannot log in with empty credentials"""
-
-
-@scenario('../features/login_into_platform.feature', 'Login with unexisting account')
-def test_login_with_unexisting_account():
-    """User cannot log in with unexisting account"""
 
 
 # Given steps
@@ -56,6 +43,7 @@ def i_go_to_login_page(page: Page):
     login_page.navigate("https://stockstrader.roboforex.com/login")
     login_page.handle_cookies_modal(accept_cookies=True)
 
+
 @when("I fill in the login form with valid credentials")
 def i_fill_valid_credentials(page: Page):
     """Fill in the login form with valid credentials"""
@@ -70,7 +58,9 @@ def i_fill_valid_credentials(page: Page):
 
     # Проверяем, что переменные окружения установлены
     if not test_login or not test_password:
-        pytest.skip("Переменные окружения TEST_LOGIN_VALID или TEST_PASSWORD_VALID не установлены")
+        pytest.skip(
+            "Переменные окружения TEST_LOGIN_VALID или TEST_PASSWORD_VALID не установлены"
+        )
 
     login_page.fill(login_page.username_field, test_login)
     login_page.fill(login_page.password_field, test_password)
@@ -133,20 +123,25 @@ def i_complete_verification_form(page: Page):
 
     # Проверяем, что переменные окружения установлены
     if not phone_digits:
-        print("WARNING: Переменная окружения PHONE_VERIFICATION не установлена, используется значение по умолчанию")
+        print(
+            "WARNING: Переменная окружения PHONE_VERIFICATION не установлена, используется значение по умолчанию"
+        )
         phone_digits = "1234"
 
     # Если формат даты в .env файле yyyy-mm-dd, преобразуем его в объект datetime
     import datetime
+
     birth_date = None
     if birthday_str:
         try:
-            parts = birthday_str.split('-')
+            parts = birthday_str.split("-")
             if len(parts) == 3:
                 year, month, day = map(int, parts)
                 birth_date = datetime.date(year, month, day)
         except (ValueError, TypeError):
-            print(f"WARNING: Неверный формат даты рождения: {birthday_str}, используется значение по умолчанию")
+            print(
+                f"WARNING: Неверный формат даты рождения: {birthday_str}, используется значение по умолчанию"
+            )
 
     # Если не удалось получить дату из .env или формат неверный, используем значение по умолчанию
     if not birth_date:
@@ -154,7 +149,9 @@ def i_complete_verification_form(page: Page):
 
     # Обрабатываем форму верификации
     try:
-        login_page.handle_verification(phone_last_digits=phone_digits, birth_date=birth_date)
+        login_page.handle_verification(
+            phone_last_digits=phone_digits, birth_date=birth_date
+        )
     except:
         pass
 
@@ -172,14 +169,18 @@ def i_should_be_logged_in(page: Page):
         # Если URL не совпадает точно, проверим хотя бы, что мы на главной платформе
         # Это обеспечивает более гибкую проверку, если URL имеет параметры или фрагменты
         current_url = page.url
-        assert "stockstrader.roboforex.com" in current_url, f"URL не содержит базовый URL платформы. Текущий URL: {current_url}"
-        assert "/login" not in current_url, f"URL все еще содержит путь логина. Текущий URL: {current_url}"
+        assert (
+            "stockstrader.roboforex.com" in current_url
+        ), f"URL не содержит базовый URL платформы. Текущий URL: {current_url}"
+        assert (
+            "/login" not in current_url
+        ), f"URL все еще содержит путь логина. Текущий URL: {current_url}"
 
     # Дополнительная проверка: убеждаемся, что страница содержит элементы дашборда
     dashboard_elements = [
         "app-dashboard",  # Предполагаемый корневой компонент дашборда
         "ion-menu",  # Типичный элемент навигации на дашборде
-        "[class*='platform-content']"  # Типичный класс для контента после логина
+        "[class*='platform-content']",  # Типичный класс для контента после логина
     ]
 
     # Проверяем наличие хотя бы одного из элементов дашборда
@@ -189,14 +190,19 @@ def i_should_be_logged_in(page: Page):
             found_dashboard_element = True
             break
 
-    assert found_dashboard_element, "Не найдены элементы дашборда на странице после логина"
+    assert (
+        found_dashboard_element
+    ), "Не найдены элементы дашборда на странице после логина"
 
 
 @then("Dashboard should be displayed")
 def dashboard_should_be_displayed(page: Page):
     """Verify that the dashboard is displayed after login"""
     # Ждем, что URL изменится на основной платформы
-    expect(page).to_have_url("https://stockstrader.roboforex.com/trading", timeout=20000)
+    expect(page).to_have_url(
+        "https://stockstrader.roboforex.com/trading", timeout=20000
+    )
+
 
 @then("I should see an error message indicating invalid credentials")
 def i_should_see_invalid_credentials_error(page: Page):
@@ -226,5 +232,3 @@ def i_should_see_account_not_exist_error(page: Page):
     expect(error_element).to_be_visible(timeout=5000)
     # Additional check for specific error text if needed
     # expect(error_element).to_contain_text("account does not exist")
-
-

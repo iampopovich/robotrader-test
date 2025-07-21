@@ -1,0 +1,16 @@
+services:
+  tests:
+    build: .
+    volumes:
+      - .:/app
+      - playwright-cache:/root/.cache/ms-playwright
+    environment:
+      - TEST_LOGIN_VALID=${TEST_LOGIN_VALID:-test@example.com}
+      - TEST_PASSWORD_VALID=${TEST_PASSWORD_VALID:-password123}
+      - PHONE_VERIFICATION=${PHONE_VERIFICATION:-1234}
+      - DATE_OF_BIRTH=${DATE_OF_BIRTH:-1993-04-14}
+      - IN_DOCKER=true
+    command: pytest -v --no-header -s
+
+volumes:
+  playwright-cache:
